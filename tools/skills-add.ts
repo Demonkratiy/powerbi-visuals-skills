@@ -80,6 +80,9 @@ function collectFiles(dir: string, prefix = ""): string[] {
     return result;
 }
 
+/** Extensions that support {{PLACEHOLDER}} substitution. Everything else is copied verbatim. */
+const TEMPLATE_EXTENSIONS = new Set([".md", ".txt", ".json", ".ts", ".js", ".html", ".css", ".yaml", ".yml"]);
+
 // ── Scaffold files ──────────────────────────────────────────────────────────
 
 const templateFiles = collectFiles(TEMPLATES_DIR);
@@ -88,8 +91,13 @@ for (const relPath of templateFiles) {
     const srcPath = path.join(TEMPLATES_DIR, relPath);
     const destPath = path.join(skillDir, relPath);
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
-    const content = fs.readFileSync(srcPath, "utf-8");
-    fs.writeFileSync(destPath, applyPlaceholders(content, skillId));
+
+    if (TEMPLATE_EXTENSIONS.has(path.extname(relPath).toLowerCase())) {
+        const content = fs.readFileSync(srcPath, "utf-8");
+        fs.writeFileSync(destPath, applyPlaceholders(content, skillId));
+    } else {
+        fs.copyFileSync(srcPath, destPath);
+    }
 }
 
 // ── Update skills.json ──────────────────────────────────────────────────────

@@ -88,6 +88,7 @@ It checks that:
 - No orphaned skill directories exist without a `skills.json` entry.
 - All `dependencies` reference valid skill IDs.
 - The `files` array lists every file present on disk (no missing or extra entries) and includes `SKILL.md`.
+- No unresolved template placeholders (`{{SKILL_ID}}`, `{{SKILL_TITLE}}`, `{{DESCRIPTION}}`) remain in text files.
 
 ### 6. Open a pull request
 
