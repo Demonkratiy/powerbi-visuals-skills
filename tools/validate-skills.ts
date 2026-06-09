@@ -179,6 +179,19 @@ for (const skill of manifest.skills) {
         }
     }
 
+    // Check for unresolved template placeholders in text files
+    const TEMPLATE_EXTENSIONS = new Set([".md", ".txt", ".json", ".ts", ".js", ".html", ".css", ".yaml", ".yml"]);
+    const PLACEHOLDER_RE = /\{\{(SKILL_ID|SKILL_TITLE|DESCRIPTION)\}\}/;
+    for (const file of skill.files) {
+        const filePath = path.join(skillDir, file);
+        if (!fs.existsSync(filePath)) continue;
+        if (!TEMPLATE_EXTENSIONS.has(path.extname(file).toLowerCase())) continue;
+        const fileContent = fs.readFileSync(filePath, "utf-8");
+        if (PLACEHOLDER_RE.test(fileContent)) {
+            error(`"${skill.id}" file "${file}" contains unresolved template placeholder.`);
+        }
+    }
+
     // Remove from disk set (to detect orphans later)
     dirsOnDisk.delete(skill.id);
 }
